@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff9efb7a23f8fe64f8b201f42bf72c4b, type: 3}
   m_Name: Rainy
   m_EditorClassIdentifier: 
-  conditionName: rainy
+  conditionName: rain
   skyboxMaterial: {fileID: 2100000, guid: b5a27fa4b11bfb24cbc6daff3802c229, type: 2}
   directionalLight: {fileID: 2741664500464379183, guid: 8767cff3417e2f54d9cac368c89bd56e, type: 3}

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff9efb7a23f8fe64f8b201f42bf72c4b, type: 3}
   m_Name: Snowy
   m_EditorClassIdentifier: 
-  conditionName: snowy
+  conditionName: snow
   skyboxMaterial: {fileID: 2100000, guid: 7b0f2096b49ccfb4f8b47c8084d650fa, type: 2}
   directionalLight: {fileID: 8727378371633113353, guid: 078fb09fb4743a847bd98bf6ae77a54f, type: 3}
