@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class WeatherController : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class WeatherController : MonoBehaviour
     // Ref to the script that controls the skybox.
     private SkyboxController skyboxController;
 
+    // values for the UI
+    public TMP_Text output_text;
+    public TMP_InputField input_field;
+
     private void Start()
     {
         // Set ref to the skybox controller.
@@ -22,8 +27,27 @@ public class WeatherController : MonoBehaviour
         weatherManager = new WeatherManager();
         weatherManager.SetCity(cityName, countryAbbreviation);
         StartCoroutine(weatherManager.GetWeatherJSON(OnWeatherDataReceived));
-    }
 
+        //Set up the basic text UI to display what is tested
+        output_text.text = "Weather In: " + cityName;
+
+        input_field.onEndEdit.AddListener(OnInputEnd);
+    }
+    private void Update()
+    {
+        //if (input_field != null && output_text != null)
+        //{
+        //    if (Input.GetKeyUp(KeyCode.Return))
+        //    {
+        //        string typedText = input_field.text;
+        //        if (string.IsNullOrEmpty(typedText))
+        //        {
+        //            cityName = typedText;
+        //            output_text.text = $"Weather In: {cityName}";
+        //        }
+        //    }
+        //}
+    }
     private void OnWeatherDataReceived(WeatherResponse weatherData)
     {
         if (weatherData != null)
@@ -98,5 +122,17 @@ public class WeatherController : MonoBehaviour
         DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dateTime = dateTime.AddSeconds(unixTime).ToLocalTime();
         return dateTime;
+    }
+    public void OnInputEnd(string userInput)
+    {
+        cityName = userInput;
+        output_text.text = $"Weather In: {cityName}"; 
+
+        weatherManager.SetCity(cityName, countryAbbreviation);
+        StartCoroutine(weatherManager.GetWeatherJSON(OnWeatherDataReceived));
+
+
+
+        Debug.Log("Weather In: " + cityName);
     }
 }
