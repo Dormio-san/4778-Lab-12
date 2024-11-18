@@ -9,24 +9,16 @@ public class WeatherController : MonoBehaviour
 
     // The city and its country to get weather data for that the user will input.
     [SerializeField] private string cityName;
-
     [SerializeField] private string countryAbbreviation;
 
-    [Header("Skybox Materials")]
-    [SerializeField] private Material sunnySkybox;
-
-    [SerializeField] private Material snowySkybox;
-    [SerializeField] private Material rainySkybox;
-    [SerializeField] private Material nightSkybox;
-
-    [Header("Directional Lights")]
-    [SerializeField] private GameObject sunLight;
-
-    [SerializeField] private GameObject moonLight;
-    [SerializeField] private GameObject rainLight;
+    // Ref to the script that controls the skybox.
+    private SkyboxController skyboxController;
 
     private void Start()
     {
+        // Set ref to the skybox controller.
+        skyboxController = GameObject.Find("SkyboxController").GetComponent<SkyboxController>();
+
         weatherManager = new WeatherManager();
         weatherManager.SetCity(cityName, countryAbbreviation);
         StartCoroutine(weatherManager.GetWeatherJSON(OnWeatherDataReceived));
@@ -47,8 +39,8 @@ public class WeatherController : MonoBehaviour
             string condition = weatherData.Weather[0].MainCondition.ToLower();
             Debug.Log($"Condition: {condition}");
 
-            UpdateSkyboxByCondition(condition);
             UpdateSkyboxByTime(weatherData.Sys.Sunrise, weatherData.Sys.Sunset, weatherData.Timezone);
+            UpdateSkyboxByCondition(condition);
 
             // Debug the city and country that was looked up so the user knows if it searched for the right place.
             Debug.Log($"{weatherData.City}, {weatherData.Sys.Country}");
@@ -60,16 +52,11 @@ public class WeatherController : MonoBehaviour
     {
         if (condition.Contains("snow"))
         {
-            RenderSettings.skybox = snowySkybox;
+            skyboxController.SetSkyboxAndLight("snow");
         }
         else if (condition.Contains("rain"))
         {
-            RenderSettings.skybox = rainySkybox;
-            rainLight.SetActive(true);
-        }
-        else
-        {
-            RenderSettings.skybox = sunnySkybox;
+            skyboxController.SetSkyboxAndLight("rain");
         }
     }
 
@@ -81,21 +68,27 @@ public class WeatherController : MonoBehaviour
 
         DateTime currentTime = DateTime.UtcNow.AddSeconds(timezone);
 
-        //Debug.Log("Sunrise: " + sunriseTime + " Sunset: " + sunsetTime + " Timezone: " + timezone);
+        Debug.Log("Sunrise: " + sunriseTime + " Sunset: " + sunsetTime + " Current Time: " + currentTime);
 
-        // If it is currently after sunrise and before sunset, set the skybox to sunny.
-        if (currentTime > sunriseTime && currentTime < sunsetTime)
+        // If it is currently an hour before or after sunrise, set the skybox to sunrise.
+        if (currentTime <= sunriseTime.AddHours(1) && currentTime >= sunriseTime.AddHours(-1))
         {
-            RenderSettings.skybox = sunnySkybox;
-            sunLight.SetActive(true);
-            moonLight.SetActive(false);
+            skyboxController.SetSkyboxAndLight("sunrise");
+        }
+        // Else if it is currently an hour before or after sunset, set the skybox to sunset.
+        else if (currentTime <= sunsetTime.AddHours(1) && currentTime >= sunsetTime.AddHours(-1))
+        {
+            skyboxController.SetSkyboxAndLight("sunset");
+        }
+        // Else if it is daytime, set the skybox to daytime.
+        else if (currentTime > sunriseTime && currentTime < sunsetTime)
+        {
+            skyboxController.SetSkyboxAndLight("day");
         }
         // Else, set the skybox to nighttime.
         else
         {
-            RenderSettings.skybox = nightSkybox;
-            sunLight.SetActive(false);
-            moonLight.SetActive(true);
+            skyboxController.SetSkyboxAndLight("night");
         }
     }
 
