@@ -9,14 +9,16 @@ public class WeatherController : MonoBehaviour
     private WeatherManager weatherManager;
 
     // The city and its country to get weather data for that the user will input.
-    [SerializeField] private string cityName;
-    [SerializeField] private string countryAbbreviation;
+    private string cityName;
+
+    private string countryAbbreviation;
 
     // Ref to the script that controls the skybox.
     private SkyboxController skyboxController;
 
     // values for the UI
     public TMP_Text output_text;
+
     public TMP_InputField input_field;
 
     private void Start()
@@ -25,29 +27,13 @@ public class WeatherController : MonoBehaviour
         skyboxController = GameObject.Find("SkyboxController").GetComponent<SkyboxController>();
 
         weatherManager = new WeatherManager();
-        weatherManager.SetCity(cityName, countryAbbreviation);
-        StartCoroutine(weatherManager.GetWeatherJSON(OnWeatherDataReceived));
 
         //Set up the basic text UI to display what is tested
         output_text.text = "Weather In: " + cityName;
 
         input_field.onEndEdit.AddListener(OnInputEnd);
     }
-    private void Update()
-    {
-        //if (input_field != null && output_text != null)
-        //{
-        //    if (Input.GetKeyUp(KeyCode.Return))
-        //    {
-        //        string typedText = input_field.text;
-        //        if (string.IsNullOrEmpty(typedText))
-        //        {
-        //            cityName = typedText;
-        //            output_text.text = $"Weather In: {cityName}";
-        //        }
-        //    }
-        //}
-    }
+
     private void OnWeatherDataReceived(WeatherResponse weatherData)
     {
         if (weatherData != null)
@@ -87,11 +73,18 @@ public class WeatherController : MonoBehaviour
     // Update the skybox based on the time of day.
     private void UpdateSkyboxByTime(double sunriseUnix, double sunsetUnix, int timezone)
     {
+        // Add the timezone to the sunrise and sunset times to get the sunrise and sunset times in the looked up city's timezone.
+        sunriseUnix += timezone;
+        sunsetUnix += timezone;
+
+        // Convert the Unix epoch time to date time for easy readability.
         DateTime sunriseTime = UnixTimeToDateTime(sunriseUnix);
         DateTime sunsetTime = UnixTimeToDateTime(sunsetUnix);
 
+        // Set the current time in the inputted city.
         DateTime currentTime = DateTime.UtcNow.AddSeconds(timezone);
 
+        // Debug the sunrise, sunset, and current time in the inputted city.
         Debug.Log("Sunrise: " + sunriseTime + " Sunset: " + sunsetTime + " Current Time: " + currentTime);
 
         // If it is currently an hour before or after sunrise, set the skybox to sunrise.
@@ -119,20 +112,28 @@ public class WeatherController : MonoBehaviour
     // Used to convert unix time to a DateTime object.
     private DateTime UnixTimeToDateTime(double unixTime)
     {
-        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        dateTime = dateTime.AddSeconds(unixTime).ToLocalTime();
+        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTime);
         return dateTime;
     }
+
     public void OnInputEnd(string userInput)
     {
         cityName = userInput;
-        output_text.text = $"Weather In: {cityName}"; 
+        output_text.text = $"Weather In: {cityName}";
 
+        // If the user enters more than just the city name, split the string into another string if there is whitespace.
+        string[] searchInfo = cityName.Split(" ");
+
+        // If the array has more than 1 item (there is a city name and country abbreviation), set the city and country.
+        if (searchInfo.Length > 1)
+        {
+            cityName = searchInfo[0];
+            countryAbbreviation = searchInfo[1];
+        }
+
+        // Set the city and country in the weather manager and get the weather data.
         weatherManager.SetCity(cityName, countryAbbreviation);
         StartCoroutine(weatherManager.GetWeatherJSON(OnWeatherDataReceived));
-
-
-
-        Debug.Log("Weather In: " + cityName);
     }
 }
