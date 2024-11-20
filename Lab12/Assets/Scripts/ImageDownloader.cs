@@ -5,12 +5,12 @@ using UnityEngine.Networking;
 
 public class ImageDownloader
 {
-    // Image of the duck song.
-    private const string webImage = "https://m.media-amazon.com/images/M/MV5BYzI1MDk0NTktNTk4NC00MDhiLWE4NmEtODI0ZDY0ZTQ0MjQ3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg";
+   
 
-    public IEnumerator DownloadImage(Action<Texture2D> callback)
+
+    public IEnumerator DownloadImage(Action<Texture2D> callback, string billBoardImage)
     {
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(webImage);
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture(billBoardImage);
         yield return request.SendWebRequest();
         callback(DownloadHandlerTexture.GetContent(request));
     }
