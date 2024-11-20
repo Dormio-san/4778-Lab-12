@@ -12,10 +12,4 @@ public class Billboard01 : BillboardController
         StartCoroutine(imageDownloader.DownloadImage(OnImageDownloaded, webImages[0]));
 
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
