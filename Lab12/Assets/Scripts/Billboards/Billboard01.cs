@@ -9,7 +9,6 @@ public class Billboard01 : BillboardController
     void Start()
     {
         imageDownloader = new ImageDownloader();
-        currBoard = billBoards[i];
         StartCoroutine(imageDownloader.DownloadImage(OnImageDownloaded, webImages[0]));
 
     }

@@ -21,7 +21,7 @@ public class BillboardController : MonoBehaviour
         
     }
 
-    private void OnImageDownloaded(Texture2D billboardImageTexture)
+    protected void OnImageDownloaded(Texture2D billboardImageTexture)
     {
         currBoard.GetComponent<MeshRenderer>().material.mainTexture = billboardImageTexture;
     }
