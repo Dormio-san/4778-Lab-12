@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GameAnalyticsSDK;
 
 public class BillboardController : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class BillboardController : MonoBehaviour
     // https://www.google.com/url?sa=i&url=https%3A%2F%2Flamar.com%2Ffresno%2Fen%2Fproducts%2Fbillboards&psig=AOvVaw1TWQoAN9ortsL8gEIm8LQQ&ust=1732231360759000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMDno-mG7IkDFQAAAAAdAAAAABAE
     private void Start()
     {
+        
         for (int i = 0; i < webImages.Length; i++)
         {
             randomNumbers.Add(i);
@@ -27,6 +29,11 @@ public class BillboardController : MonoBehaviour
     {
         
         this.GetComponent<MeshRenderer>().material.mainTexture = billboardImageTexture;
+        //Initializes the GameAnalytics
+        GameAnalytics.Initialize();
+        //Sends data that the images were downloaded successfully
+        GameAnalytics.NewDesignEvent("Images Downloaded");
+
     }
 
     protected string PickImage()
