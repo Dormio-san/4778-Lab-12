@@ -35,6 +35,7 @@ public class WeatherManager
             }
             else
             {
+                // Save the json data to a string to then save it and send it to the callback.
                 string jsonData = request.downloadHandler.text;
                 SaveJSON(jsonData);
                 callback(jsonData);
@@ -48,11 +49,13 @@ public class WeatherManager
         jsonApi = $"https://api.openweathermap.org/data/2.5/weather?q={city},{country}&mode=json&appid=075b4b30c5afa318dae5d2f5c390071e";
         return CallAPI(jsonApi, jsonData =>
         {
+            // Try to parse the json data and send it to the callback.
             try
             {
                 WeatherResponse weatherResponse = JsonConvert.DeserializeObject<WeatherResponse>(jsonData);
                 callback(weatherResponse);
             }
+            // If there is some sort of error while parsing the json data, log the error.
             catch (Exception e)
             {
                 Debug.LogError($"Failed to parse JSON: {e.Message}");
@@ -63,10 +66,12 @@ public class WeatherManager
     // Save the json data to a file so we can read it.
     private void SaveJSON(string jsonData)
     {
+        // Try to save the json data to a file.
         try
         {
             File.WriteAllText(jsonFilePath, jsonData);
         }
+        // If there is some sort of error while saving the json data, log the error.
         catch (Exception e)
         {
             Debug.LogError($"Failed to save JSON: {e.Message}");
@@ -77,44 +82,55 @@ public class WeatherManager
 // The classes below are used to deserialize the JSON data from the OpenWeatherMap API.
 public class WeatherResponse
 {
+    // Seraches for "main" in the json data and assigns it to the MainData class.
     [JsonProperty("main")]
     public MainData Main { get; set; }
 
+    // Searches for "weather" in the json data and assigns it to the WeatherData class.
     [JsonProperty("weather")]
     public List<WeatherData> Weather { get; set; }
 
+    // Searches for "sys" in the json data and assigns it to the SystemData class.
     public SystemData Sys { get; set; }
 
+    // Searches for "timezone" in the json data and assigns it to the Timezone variable.
     [JsonProperty("timezone")]
     public int Timezone { get; set; }
 
+    // Searches for "name" in the json data and assigns it to the City variable.
     [JsonProperty("name")]
     public string City { get; set; }
 }
 
 public class MainData
 {
+    // Searches for the "temp" in the json data and assigns it to the Temp variable, which is used to indicate the temperature.
     [JsonProperty("temp")]
     public float Temp { get; set; }
 }
 
 public class WeatherData
 {
+    // Once within the "weather" object, searches for "main" and assigns it to the MainCondition variable.
     [JsonProperty("main")]
     public string MainCondition { get; set; }
 
+    // Also searches for "description" and assigns it to the Description variable.
     [JsonProperty("description")]
     public string Description { get; set; }
 }
 
 public class SystemData
 {
+    // Once within the "sys" object, searches for "sunrise" and assigns it to the Sunrise variable.
     [JsonProperty("sunrise")]
     public double Sunrise { get; set; }
 
+    // Also searches for "sunset" and assigns it to the Sunset variable.
     [JsonProperty("sunset")]
     public double Sunset { get; set; }
 
+    // Finally, searches for "country" and assigns it to the Country variable.
     [JsonProperty("country")]
     public string Country { get; set; }
 }

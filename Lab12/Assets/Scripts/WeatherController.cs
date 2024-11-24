@@ -122,8 +122,9 @@ public class WeatherController : MonoBehaviour
         cityName = userInput;
         output_text.text = $"Weather In: {cityName}";
 
-        // If the user enters more than just the city name, split the string into another string if there is whitespace.
-        string[] searchInfo = cityName.Split(" ");
+        // If the user enters more than just the city name, split the string into another string if there is a comma.
+        // A comma is used to separate the city name and country abbreviation because city names can have spaces.
+        string[] searchInfo = cityName.Split(",");
 
         // If the array has more than 1 item (there is a city name and country abbreviation), set the city and country.
         if (searchInfo.Length > 1)

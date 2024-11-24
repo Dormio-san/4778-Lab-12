@@ -5,11 +5,16 @@ using UnityEngine;
 public class Billboard03 : BillboardController
 {
     private ImageDownloader imageDownloader;
-    // Start is called before the first frame update
-    void Start()
+
+    private void Start()
     {
         imageDownloader = new ImageDownloader();
-        StartCoroutine(imageDownloader.DownloadImage(OnImageDownloaded, webImages[2]));
+        StartCoroutine(GetBillboardImage());
+    }
 
+    private IEnumerator GetBillboardImage()
+    {
+        yield return new WaitForSeconds(2);
+        StartCoroutine(imageDownloader.GetWebImage(OnImageDownloaded, PickImage()));
     }
 }
